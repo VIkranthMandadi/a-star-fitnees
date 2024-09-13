@@ -1,0 +1,36 @@
+{
+  "name": "Pull Workout",
+  "description": "A workout focused on pulling movements targeting back and biceps.",
+  "exercises": [
+    {
+      "name": "Pull-Ups",
+      "sets": 4,
+      "reps": 8,
+      "description": "Perform pull-ups to target the upper back and lats."
+    },
+    {
+      "name": "Bent Over Rows",
+      "sets": 4,
+      "reps": 10,
+      "description": "Perform rows with a barbell or dumbbells to target the middle back."
+    },
+    {
+      "name": "Deadlifts",
+      "sets": 4,
+      "reps": 6,
+      "description": "Perform deadlifts to target the lower back, hamstrings, and glutes."
+    },
+    {
+      "name": "Face Pulls",
+      "sets": 3,
+      "reps": 15,
+      "description": "Use a cable machine to perform face pulls, targeting the rear deltoids."
+    },
+    {
+      "name": "Bicep Curls",
+      "sets": 3,
+      "reps": 12,
+      "description": "Perform curls with a barbell or dumbbells to target the biceps."
+    }
+  ]
+}
