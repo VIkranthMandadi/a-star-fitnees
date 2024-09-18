@@ -1,0 +1,36 @@
+{
+  "name": "Legs Workout",
+  "description": "A workout focused on lower body exercises targeting quads, hamstrings, and glutes.",
+  "exercises": [
+    {
+      "name": "Squats",
+      "sets": 4,
+      "reps": 8,
+      "description": "Perform squats with a barbell to target the quads and glutes."
+    },
+    {
+      "name": "Lunges",
+      "sets": 3,
+      "reps": 12,
+      "description": "Perform lunges with dumbbells to target the quads and hamstrings."
+    },
+    {
+      "name": "Leg Press",
+      "sets": 4,
+      "reps": 10,
+      "description": "Use the leg press machine to target the quads."
+    },
+    {
+      "name": "Romanian Deadlifts",
+      "sets": 3,
+      "reps": 10,
+      "description": "Perform Romanian deadlifts with a barbell to target the hamstrings."
+    },
+    {
+      "name": "Calf Raises",
+      "sets": 3,
+      "reps": 15,
+      "description": "Perform calf raises with a barbell or machine to target the calves."
+    }
+  ]
+}

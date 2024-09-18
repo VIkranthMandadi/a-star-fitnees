@@ -1,0 +1,36 @@
+{
+  "name": "Push Workout",
+  "description": "A workout focused on pushing movements targeting chest, shoulders, and triceps.",
+  "exercises": [
+    {
+      "name": "Bench Press",
+      "sets": 4,
+      "reps": 8,
+      "description": "Perform the bench press with a barbell or dumbbells to target the chest."
+    },
+    {
+      "name": "Overhead Press",
+      "sets": 4,
+      "reps": 10,
+      "description": "Press the barbell or dumbbells overhead to target the shoulders."
+    },
+    {
+      "name": "Incline Dumbbell Press",
+      "sets": 3,
+      "reps": 12,
+      "description": "Perform the press at an incline to focus on the upper chest."
+    },
+    {
+      "name": "Tricep Dips",
+      "sets": 3,
+      "reps": 12,
+      "description": "Perform dips to target the triceps."
+    },
+    {
+      "name": "Lateral Raises",
+      "sets": 3,
+      "reps": 15,
+      "description": "Raise the dumbbells to the side to target the lateral deltoids."
+    }
+  ]
+}
