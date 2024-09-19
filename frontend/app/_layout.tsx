@@ -5,11 +5,34 @@ import * as SecureStore from "expo-secure-store";
 
 const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY!;
 
-if (!publishableKey) {
-  throw new Error(
-    "Missing Publishable Key. Please set EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY in your .env"
-  );
-}
+const InitialLayout = () => {
+  const { isLoaded, isSignedIn } = useAuth();
+  const segments = useSegments();
+  const router = useRouter();
+
+  useEffect(() => {
+    console.log("isSingedn in : ", isSignedIn);
+    if (!isLoaded) return;
+
+    const inTabsGroup = segments[0] === "(auth)";
+
+    
+
+    if (isSignedIn && !inTabsGroup) {
+      router.replace("/home");
+    } else if (!isSignedIn) {
+      router.replace("/login");
+    }
+  }, [isSignedIn]);
+
+  return <Slot />;
+};
+
+// if (!publishableKey) {
+//   throw new Error(
+//     "Missing Publishable Key. Please set EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY in your .env"
+//   );
+// }
 
 const tokenCache = {
   async getToken(key: string) {
@@ -34,28 +57,6 @@ const tokenCache = {
       return;
     }
   },
-};
-
-const InitialLayout = () => {
-  const { isLoaded, isSignedIn } = useAuth();
-  const segments = useSegments();
-  const router = useRouter();
-
-  useEffect(() => {
-    if (!isLoaded) return;
-
-    const inTabsGroup = segments[0] === "(auth)";
-
-    console.log("User changed: ", isSignedIn);
-
-    if (isSignedIn && !inTabsGroup) {
-      router.replace("/home");
-    } else if (!isSignedIn) {
-      router.replace("/login");
-    }
-  }, [isSignedIn]);
-
-  return <Slot />;
 };
 
 export default function RootLayout() {
