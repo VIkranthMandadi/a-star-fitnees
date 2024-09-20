@@ -1,52 +1,42 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from flask_cors import CORS
 from pymongo.mongo_client import MongoClient
 import json
 
 app = Flask(__name__)
-
-# Enable CORS for all routes
 CORS(app)
+
+# Load secrets from the file
 with open('secrets.json') as f:
     secrets = json.load(f)
 
 uri = secrets['MONGODB_URI']
+client = MongoClient(uri, ssl=True)
+db = client['astarFitness']
 
-# MongoDB connection setup
-client = MongoClient(uri)  # Replace with your MongoDB URI
-db = client['mydatabase']  # Replace with your database name
-collection = db['mycollection']  # Replace with your collection name
-
-# Send a ping to confirm a successful connection
-try:
-    client.admin.command('ping')
-    print("Pinged your deployment. You successfully connected to MongoDB!")
-except Exception as e:
-    print(e)
-
-# Sample route to retrieve data from MongoDB
-@app.route('/data', methods=['GET'])
-def get_data():
-    data = collection.find()
-    result = []
-    for item in data:
-        # MongoDB returns an ObjectId, convert it to string to return in JSON
-        item['_id'] = str(item['_id'])
-        result.append(item)
-    return jsonify(result)
-
-# Sample route to insert data into MongoDB
-@app.route('/data', methods=['POST'])
-def insert_data():
+# Route to create a user-specific collection
+@app.route('/create-user-collection', methods=['POST'])
+def create_user_collection():
+    print("got here")
     data = request.json
-    inserted_id = collection.insert_one(data).inserted_id
-    return jsonify({'message': 'Data inserted', 'id': str(inserted_id)})
+    print(data)
+    user_email = data.get('email')
+
+    if not user_email:
+        return jsonify({'error': 'Email is required'}), 400
+
+    # Create a collection for the user using their email
+    user_collection_name = f"user_{user_email.replace('@', '_').replace('.', '_')}"
+    user_collection = db[user_collection_name]
+
+    # Optional: Insert a welcome document or do other initial setup
+    user_collection.insert_one({'message': 'Welcome to your collection!'})
+
+    return jsonify({'message': 'User collection created', 'collection': user_collection_name})
 
 @app.route('/')
 def home():
     return jsonify({"message": "CORS-enabled Flask backend!"})
 
 if __name__ == '__main__':
-    # Run the app on the local development server
-    # print(get_question("sarthak is a genius", "sarthak"))
     app.run(port=8000, debug=True)
