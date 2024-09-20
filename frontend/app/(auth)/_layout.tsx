@@ -41,6 +41,17 @@ export default function TabsPage(){
         redirect={!isSignedIn}
       />
       <Tabs.Screen
+        name="calendar"
+        options={{
+          headerTitle: "Calendar",
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="calendar" size={size} color={color} />
+          ),
+          tabBarLabel: "Calendar",
+        }}
+        redirect={!isSignedIn}
+      />
+      <Tabs.Screen
         name="profile"
         options={{
           headerTitle: "My Profile",

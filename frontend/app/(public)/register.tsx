@@ -3,6 +3,7 @@ import { useSignUp } from "@clerk/clerk-expo";
 import Spinner from "react-native-loading-spinner-overlay";
 import { useState } from "react";
 import { Stack } from "expo-router";
+import { createUserCollection } from "@/services/userServices";
 
 export default function Register(){
   const { isLoaded, signUp, setActive } = useSignUp();
@@ -47,17 +48,34 @@ export default function Register(){
     setLoading(true);
 
     try {
+      // Attempt email address verification
       const completeSignUp = await signUp.attemptEmailAddressVerification({
         code,
       });
 
+      // Set the user session as active
       await setActive({ session: completeSignUp.createdSessionId });
+
+      // Create a user-specific collection
+      const userEmail = completeSignUp.emailAddress; // Get the user's email
+
+      if (!userEmail) {
+        throw new Error("User email is required to create a collection.");
+      }
+
+      console.log(userEmail);
+      createUserCollection({ email: userEmail })
+        .then((response) => console.log(response))
+        .catch((error) => console.error(error));; // Call the service to create a collection
+
+      alert("Verification successful and user collection created!"); // Success message
     } catch (err: any) {
-      alert(err.errors[0].message);
+      alert(err.errors[0]?.message || "An error occurred during verification.");
     } finally {
       setLoading(false);
     }
   };
+
 
   return (
     <View style={styles.container}>
