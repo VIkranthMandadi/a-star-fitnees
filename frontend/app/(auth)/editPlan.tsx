@@ -16,8 +16,8 @@ import tw from "twrnc";
 const pushWorkout = require("../../assets/PremadeWorkouts/Push.json");
 const pullWorkout = require("../../assets/PremadeWorkouts/Pull.json");
 const legsWorkout = require("../../assets/PremadeWorkouts/Legs.json");
-const testWorkout = require("../../assets/PremadeWorkouts/test.json");
-const testWorkout2 = require("../../assets/PremadeWorkouts/test2.json");
+// const testWorkout = require("../../assets/PremadeWorkouts/test.json");
+// const testWorkout2 = require("../../assets/PremadeWorkouts/test2.json");
 
 export default function EditPlan() {
   const [modalVisible, setModalVisible] = useState(false);
@@ -42,17 +42,17 @@ export default function EditPlan() {
       name: legsWorkout.name,
       description: legsWorkout.description,
       exercises: legsWorkout.exercises,
-    },
-    {
-      name: testWorkout.name,
-      description: testWorkout.description,
-      excercises: testWorkout.excercises
-    },
-    {
-      name: testWorkout2.name,
-      description: testWorkout2.description,
-      excercises: testWorkout2.excercises
     }
+    // {
+    //   name: testWorkout.name,
+    //   description: testWorkout.description,
+    //   excercises: testWorkout.excercises
+    // },
+    // {
+    //   name: testWorkout2.name,
+    //   description: testWorkout2.description,
+    //   excercises: testWorkout2.excercises
+    // }
   ];
 
   const handleWorkoutSelect = (workout: any) => {
