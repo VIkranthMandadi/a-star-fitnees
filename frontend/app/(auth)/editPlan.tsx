@@ -16,6 +16,8 @@ import tw from "twrnc";
 const pushWorkout = require("../../assets/PremadeWorkouts/Push.json");
 const pullWorkout = require("../../assets/PremadeWorkouts/Pull.json");
 const legsWorkout = require("../../assets/PremadeWorkouts/Legs.json");
+const testWorkout = require("../../assets/PremadeWorkouts/test.json");
+const testWorkout2 = require("../../assets/PremadeWorkouts/test2.json");
 
 export default function EditPlan() {
   const [modalVisible, setModalVisible] = useState(false);
@@ -41,6 +43,16 @@ export default function EditPlan() {
       description: legsWorkout.description,
       exercises: legsWorkout.exercises,
     },
+    {
+      name: testWorkout.name,
+      description: testWorkout.description,
+      excercises: testWorkout.excercises
+    },
+    {
+      name: testWorkout2.name,
+      description: testWorkout2.description,
+      excercises: testWorkout2.excercises
+    }
   ];
 
   const handleWorkoutSelect = (workout: any) => {
@@ -57,12 +69,7 @@ export default function EditPlan() {
   };
 
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: "#A1CEDC", dark: "#1D3D47" }}
-      headerImage={
-        <Image source={require("@/assets/images/partial-react-logo.png")} />
-      }
-    >
+    <>
       <FlatList
         data={selectedWorkouts}
         keyExtractor={(item, index) => index.toString()}
@@ -84,6 +91,7 @@ export default function EditPlan() {
             </Button>
           </View>
         )}
+        
         ListFooterComponent={() => (
           <Button mode="contained" onPress={() => setModalVisible(true)}>
             Add Workout
@@ -187,6 +195,6 @@ export default function EditPlan() {
           </View>
         </View>
       </Modal>
-    </ParallaxScrollView>
+      </>
   );
 }
