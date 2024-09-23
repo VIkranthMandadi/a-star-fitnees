@@ -34,6 +34,27 @@ def create_user_collection():
 
     return jsonify({'message': 'User collection created', 'collection': user_collection_name})
 
+
+@app.route('/update-profile', methods=['POST'])
+def update_profile():
+    data = request.json
+    user_email = data.get('email')
+    profile_data = data.get('profileData')
+
+    if not user_email or not profile_data:
+        return jsonify({'error': 'Email and profile data are required'}), 400
+
+    user_collection_name = f"user_{user_email.replace('@', '_').replace('.', '_')}"
+    user_collection = db[user_collection_name]
+
+    user_collection.update_one(
+        {'profile': 'data'},
+        {'$set': profile_data},
+        upsert=True
+    )
+
+    return jsonify({'message': 'Profile updated successfully'})
+
 @app.route('/')
 def home():
     return jsonify({"message": "CORS-enabled Flask backend!"})
