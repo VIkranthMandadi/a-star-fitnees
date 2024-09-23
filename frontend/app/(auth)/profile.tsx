@@ -2,15 +2,15 @@ import React, { useState } from "react";
 import {
   View,
   Text,
-  Button,
   TextInput,
-  StyleSheet,
   TouchableOpacity,
+  Button,
   Image,
 } from "react-native";
 import { useUser } from "@clerk/clerk-expo";
-import { FontAwesome } from "@expo/vector-icons"; // For pencil icon
+import { FontAwesome } from "@expo/vector-icons";
 import axios from "axios";
+import tw from "twrnc"; // Importing Tailwind for React Native
 
 interface ProfileData {
   firstName: string;
@@ -24,17 +24,16 @@ interface ProfileData {
 export default function Profile() {
   const { user } = useUser();
 
-  // Initial values are typed as `string` and use fallback values like 'null' or an empty string
   const [firstName, setFirstName] = useState<string>(user?.firstName || "null");
   const [lastName, setLastName] = useState<string>(user?.lastName || "null");
   const [username, setUsername] = useState<string>(user?.username || "null");
   const [age, setAge] = useState<string>("null");
   const [weight, setWeight] = useState<string>("null");
   const [height, setHeight] = useState<string>("null");
-  const [isEditing, setIsEditing] = useState<keyof ProfileData | null>(null); // `null` means no field is being edited
+  const [isEditing, setIsEditing] = useState<keyof ProfileData | null>(null);
 
   const handleEdit = (field: keyof ProfileData) => {
-    setIsEditing(field); // Set which field is being edited
+    setIsEditing(field);
   };
 
   const handleSave = async () => {
@@ -48,11 +47,10 @@ export default function Profile() {
         height,
       };
 
-      // Typing the response to ensure proper types when handling axios requests
       const response = await axios.post<{ message: string }>(
         "http://localhost:8000/update-profile",
         {
-          email: user?.emailAddresses[0].emailAddress, // Assuming you have the email in the Clerk user object
+          email: user?.emailAddresses[0].emailAddress,
           profileData: updatedProfileData,
         }
       );
@@ -61,7 +59,7 @@ export default function Profile() {
     } catch (error) {
       console.log("Error updating profile:", error);
     }
-    setIsEditing(null); // Stop editing after saving
+    setIsEditing(null);
   };
 
   const renderEditableField = (
@@ -70,25 +68,36 @@ export default function Profile() {
     field: keyof ProfileData,
     setter: React.Dispatch<React.SetStateAction<string>>
   ) => (
-    <View style={styles.fieldContainer}>
-      <Text style={styles.label}>{label}:</Text>
+    <View style={tw`flex-row items-center my-3`}>
+      <Text style={tw`text-sm font-semibold flex-1 text-gray-800`}>
+        {label}:
+      </Text>
       {isEditing === field ? (
         <TextInput
           value={value === "null" ? "" : value}
           onChangeText={setter}
-          style={styles.inputField}
+          style={tw`flex-3 border-b border-gray-300 text-base`}
         />
       ) : (
-        <Text style={styles.value}>{value}</Text>
+        <Text style={tw`text-sm flex-3 text-gray-600 m-3`}>
+          {value === "null" ? "N/A" : value}
+        </Text>
       )}
       <TouchableOpacity onPress={() => handleEdit(field)}>
-        <FontAwesome name="pencil" size={20} color="black" />
+        <FontAwesome name="pencil" size={20} color="black" style={tw`ml-3`} />
       </TouchableOpacity>
     </View>
   );
 
   return (
-    <View style={styles.container}>
+    <View style={tw`flex-1 justify-center p-6 bg-white`}>
+      <Image
+        source={{
+          uri: user?.imageUrl || "https://via.placeholder.com/100",
+        }}
+        style={tw`w-24 h-24 rounded-full self-center mb-6`}
+      />
+
       {renderEditableField("First Name", firstName, "firstName", setFirstName)}
       {renderEditableField("Last Name", lastName, "lastName", setLastName)}
       {renderEditableField("Username", username, "username", setUsername)}
@@ -96,33 +105,9 @@ export default function Profile() {
       {renderEditableField("Weight (kg)", weight, "weight", setWeight)}
       {renderEditableField("Height (cm)", height, "height", setHeight)}
 
-      {isEditing && <Button title="Save" onPress={handleSave} />}
+      {isEditing && (
+        <Button title="Save" onPress={handleSave} color="#6c47ff" />
+      )}
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    padding: 40,
-  },
-  fieldContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginVertical: 10,
-  },
-  label: {
-    fontSize: 16,
-    flex: 1,
-  },
-  value: {
-    fontSize: 16,
-    flex: 3,
-  },
-  inputField: {
-    borderBottomWidth: 1,
-    flex: 3,
-    marginRight: 10,
-  },
-});
