@@ -10,6 +10,7 @@ import {
 import { useUser } from "@clerk/clerk-expo";
 import { FontAwesome } from "@expo/vector-icons";
 import axios from "axios";
+import { updateUserProfile } from "@/services/userServices";
 import tw from "twrnc"; // Importing Tailwind for React Native
 
 interface ProfileData {
@@ -38,6 +39,11 @@ export default function Profile() {
 
   const handleSave = async () => {
     try {
+
+      if (!user?.emailAddresses[0].emailAddress) {
+        throw new Error("User email is missing");
+      }
+      
       const updatedProfileData: ProfileData = {
         firstName,
         lastName,
@@ -47,20 +53,18 @@ export default function Profile() {
         height,
       };
 
-      const response = await axios.post<{ message: string }>(
-        "http://localhost:8000/update-profile",
-        {
-          email: user?.emailAddresses[0].emailAddress,
-          profileData: updatedProfileData,
-        }
+      await updateUserProfile(
+        user?.emailAddresses[0].emailAddress,
+        updatedProfileData
       );
 
-      console.log("Profile updated:", response.data);
+      console.log("Profile updated successfully.");
     } catch (error) {
       console.log("Error updating profile:", error);
     }
     setIsEditing(null);
   };
+
 
   const renderEditableField = (
     label: string,
@@ -79,7 +83,11 @@ export default function Profile() {
           style={tw`flex-3 border-b border-gray-300 text-base`}
         />
       ) : (
-        <Text style={tw`text-sm flex-3 text-gray-600 m-3`}>
+        <Text
+          style={tw`text-sm flex-3 text-gray-600 m-3`}
+          numberOfLines={1} // Ensure only one line is shown
+          ellipsizeMode="tail" // Truncate text with ellipsis if it's too long
+        >
           {value === "null" ? "N/A" : value}
         </Text>
       )}
@@ -100,7 +108,7 @@ export default function Profile() {
 
       {renderEditableField("First Name", firstName, "firstName", setFirstName)}
       {renderEditableField("Last Name", lastName, "lastName", setLastName)}
-      {renderEditableField("Username", username, "username", setUsername)}
+      {renderEditableField("User\nname", username, "username", setUsername)}
       {renderEditableField("Age", age, "age", setAge)}
       {renderEditableField("Weight (kg)", weight, "weight", setWeight)}
       {renderEditableField("Height (cm)", height, "height", setHeight)}
