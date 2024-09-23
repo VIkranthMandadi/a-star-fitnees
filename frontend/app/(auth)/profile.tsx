@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -10,7 +10,7 @@ import {
 import { useUser } from "@clerk/clerk-expo";
 import { FontAwesome } from "@expo/vector-icons";
 import axios from "axios";
-import { updateUserProfile } from "@/services/userServices";
+import { updateUserProfile, getUserProfile } from "@/services/userServices"; // New getUserProfile function
 import tw from "twrnc"; // Importing Tailwind for React Native
 
 interface ProfileData {
@@ -25,13 +25,40 @@ interface ProfileData {
 export default function Profile() {
   const { user } = useUser();
 
-  const [firstName, setFirstName] = useState<string>(user?.firstName || "null");
-  const [lastName, setLastName] = useState<string>(user?.lastName || "null");
-  const [username, setUsername] = useState<string>(user?.username || "null");
-  const [age, setAge] = useState<string>("null");
-  const [weight, setWeight] = useState<string>("null");
-  const [height, setHeight] = useState<string>("null");
+  const [firstName, setFirstName] = useState<string>("");
+  const [lastName, setLastName] = useState<string>("");
+  const [username, setUsername] = useState<string>("");
+  const [age, setAge] = useState<string>("");
+  const [weight, setWeight] = useState<string>("");
+  const [height, setHeight] = useState<string>("");
   const [isEditing, setIsEditing] = useState<keyof ProfileData | null>(null);
+
+  // Fetch profile data when component mounts
+  useEffect(() => {
+    const fetchProfileData = async () => {
+      try {
+        const email = user?.emailAddresses[0].emailAddress;
+
+        if (email) {
+          const response = await getUserProfile(email); // Call the new service to fetch profile data
+          const profileData = response.profileData;
+
+          if (profileData) {
+            setFirstName(profileData.firstName || "");
+            setLastName(profileData.lastName || "");
+            setUsername(profileData.username || "");
+            setAge(profileData.age || "");
+            setWeight(profileData.weight || "");
+            setHeight(profileData.height || "");
+          }
+        }
+      } catch (error) {
+        console.log("Error fetching profile data:", error);
+      }
+    };
+
+    fetchProfileData();
+  }, [user]);
 
   const handleEdit = (field: keyof ProfileData) => {
     setIsEditing(field);
@@ -39,11 +66,10 @@ export default function Profile() {
 
   const handleSave = async () => {
     try {
-
       if (!user?.emailAddresses[0].emailAddress) {
         throw new Error("User email is missing");
       }
-      
+
       const updatedProfileData: ProfileData = {
         firstName,
         lastName,
@@ -65,7 +91,6 @@ export default function Profile() {
     setIsEditing(null);
   };
 
-
   const renderEditableField = (
     label: string,
     value: string,
@@ -78,17 +103,17 @@ export default function Profile() {
       </Text>
       {isEditing === field ? (
         <TextInput
-          value={value === "null" ? "" : value}
+          value={value}
           onChangeText={setter}
           style={tw`flex-3 border-b border-gray-300 text-base`}
         />
       ) : (
         <Text
           style={tw`text-sm flex-3 text-gray-600 m-3`}
-          numberOfLines={1} // Ensure only one line is shown
-          ellipsizeMode="tail" // Truncate text with ellipsis if it's too long
+          numberOfLines={1}
+          ellipsizeMode="tail"
         >
-          {value === "null" ? "N/A" : value}
+          {value || "N/A"}
         </Text>
       )}
       <TouchableOpacity onPress={() => handleEdit(field)}>

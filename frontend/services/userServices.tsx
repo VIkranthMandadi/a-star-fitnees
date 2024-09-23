@@ -43,3 +43,9 @@ export const updateUserProfile = async (email: string, profileData: ProfileData)
     throw error;
   }
 };
+
+// Function to fetch user profile data
+export const getUserProfile = async (email: string) => {
+  const response = await api.post("/get-profile", { email });
+  return response.data;
+};

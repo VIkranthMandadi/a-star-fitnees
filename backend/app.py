@@ -55,6 +55,26 @@ def update_profile():
 
     return jsonify({'message': 'Profile updated successfully'})
 
+@app.route('/get-profile', methods=['POST'])
+def get_profile():
+    data = request.json
+    user_email = data.get('email')
+
+    if not user_email:
+        return jsonify({'error': 'Email is required'}), 400
+
+    user_collection_name = f"user_{user_email.replace('@', '_').replace('.', '_')}"
+    user_collection = db[user_collection_name]
+
+    # Find the profile data
+    profile_data = user_collection.find_one({'profile': 'data'}, {'_id': 0})  # Exclude _id field
+
+    if not profile_data:
+        return jsonify({'message': 'Profile not found', 'profileData': None}), 404
+
+    return jsonify({'message': 'Profile found', 'profileData': profile_data})
+
+
 @app.route('/')
 def home():
     return jsonify({"message": "CORS-enabled Flask backend!"})
