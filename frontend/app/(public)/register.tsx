@@ -1,22 +1,31 @@
-import { Button, TextInput, View, StyleSheet } from "react-native";
+import { Button, TextInput, View, StyleSheet, TouchableOpacity, Text } from "react-native";
 import { useSignUp } from "@clerk/clerk-expo";
 import Spinner from "react-native-loading-spinner-overlay";
 import { useState } from "react";
 import { Stack } from "expo-router";
 import { createUserCollection } from "@/services/userServices";
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 export default function Register(){
   const { isLoaded, signUp, setActive } = useSignUp();
-
   const [emailAddress, setEmailAddress] = useState("");
   const [password, setPassword] = useState("");
   const [pendingVerification, setPendingVerification] = useState(false);
   const [code, setCode] = useState("");
   const [loading, setLoading] = useState(false);
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   // Create the user and send the verification email
   const onSignUpPress = async () => {
     if (!isLoaded) {
+      return;
+    }
+
+    //Checking if the passwords match
+    if (password !== confirmPassword) {
+      alert("Passwords do not match!");
       return;
     }
     setLoading(true);
@@ -81,29 +90,48 @@ export default function Register(){
     <View style={styles.container}>
       <Stack.Screen options={{ headerBackVisible: !pendingVerification }} />
       <Spinner visible={loading} />
-
       {!pendingVerification && (
         <>
-          <TextInput
-            autoCapitalize="none"
-            placeholder="simon@galaxies.dev"
-            value={emailAddress}
-            onChangeText={setEmailAddress}
-            style={styles.inputField}
-          />
-          <TextInput
-            placeholder="password"
-            value={password}
-            onChangeText={setPassword}
-            secureTextEntry
-            style={styles.inputField}
-          />
-
-          <Button
+          <View style={styles.inputContainer}>
+            <TextInput
+              autoCapitalize="none"
+              placeholder="simon@galaxies.dev"
+              value={emailAddress}
+              onChangeText={setEmailAddress}
+              style={styles.inputField}
+            />
+          </View>
+          
+          <View style={styles.inputContainer}>
+            <TextInput
+              placeholder="Password"
+              value={password}
+              onChangeText={setPassword}
+              secureTextEntry={!showPassword}
+              style={styles.inputField}
+            />
+            <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={styles.iconContainer}>
+                <Icon name={showPassword ? "visibility" : "visibility-off"} size={24} color="#6c47ff" />
+              </TouchableOpacity>
+          </View>
+          <View style={styles.inputContainer}>
+            <TextInput
+              placeholder="Confirm Password"
+              value={confirmPassword}
+              onChangeText={setConfirmPassword}
+              secureTextEntry={!showConfirmPassword}
+              style={styles.inputField}
+            />
+            <TouchableOpacity onPress={() => setShowConfirmPassword(!showConfirmPassword)} style={styles.iconContainer}>
+                <Icon name={showConfirmPassword ? "visibility" : "visibility-off"} size={24} color="#6c47ff" />
+              </TouchableOpacity>
+          </View>
+          <TouchableOpacity
             onPress={onSignUpPress}
-            title="Sign up"
-            color={"#6c47ff"}
-          ></Button>
+            style={styles.button} 
+          >
+            <Text style={styles.buttonText}>Sign up</Text>
+          </TouchableOpacity>
         </>
       )}
 
@@ -117,11 +145,12 @@ export default function Register(){
               onChangeText={setCode}
             />
           </View>
-          <Button
+          <TouchableOpacity
             onPress={onPressVerify}
-            title="Verify Email"
-            color={"#6c47ff"}
-          ></Button>
+            style={styles.button} 
+          >
+            <Text style={styles.buttonText}>Verify Email</Text>
+        </TouchableOpacity>
         </>
       )}
     </View>
@@ -130,22 +159,62 @@ export default function Register(){
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flexGrow: 1,
+    flexShrink: 1,
+    flexBasis: 0,
+    paddingVertical: 24,
+    paddingHorizontal: 10,
     justifyContent: "center",
-    padding: 20,
+    //padding: 20,
+  },
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center', 
+    position: 'relative',
+    borderWidth: 1,
+    borderColor: "#6c47ff",
+    borderRadius: 12,
+    marginVertical: 4,
+    height: 50,
+    backgroundColor: "#fff",
   },
   inputField: {
     marginVertical: 4,
-    height: 50,
-    borderWidth: 1,
+    height: '100%',
+    borderWidth: 0,
     borderColor: "#6c47ff",
-    borderRadius: 4,
+    borderStyle: 'solid',
+    borderRadius: 12,
     padding: 10,
     backgroundColor: "#fff",
+    paddingHorizontal: 10, 
+    paddingVertical: 0,
+    flex: 1,
+  },
+  iconContainer: {
+    position: 'absolute', 
+    right: 10, 
+    top: 13, 
+    justifyContent: 'center', 
+    alignItems: 'center', 
   },
   button: {
+    borderRadius: 30,
+    borderWidth: 1,
+    flexDirection: 'row',  
+    justifyContent: 'center', 
     margin: 8,
     alignItems: "center",
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    backgroundColor: '#6c47ff',
+    borderColor: '#6c47ff',
+  },
+  buttonText: {
+    fontSize: 18,
+    lineHeight: 26,
+    fontWeight: '600',  
+    color: '#fff', 
   },
 });
 
