@@ -1,23 +1,9 @@
-import React, { useState } from "react";
-import {
-  Image,
-  View,
-  Text,
-  Modal,
-  TouchableOpacity,
-  FlatList,
-} from "react-native";
+import React, { useState, useEffect } from "react";
+import { View, Text, Modal, TouchableOpacity, FlatList } from "react-native";
 import { Button } from "react-native-paper";
-import ParallaxScrollView from "@/components/ParallaxScrollView";
+import { fetchPremadeWorkouts } from "@/services/workoutServices";
 import Workout from "@/components/Workout";
 import tw from "twrnc";
-
-// Import the JSON files
-const pushWorkout = require("../../assets/PremadeWorkouts/Push.json");
-const pullWorkout = require("../../assets/PremadeWorkouts/Pull.json");
-const legsWorkout = require("../../assets/PremadeWorkouts/Legs.json");
-// const testWorkout = require("../../assets/PremadeWorkouts/test.json");
-// const testWorkout2 = require("../../assets/PremadeWorkouts/test2.json");
 
 export default function EditPlan() {
   const [modalVisible, setModalVisible] = useState(false);
@@ -26,34 +12,21 @@ export default function EditPlan() {
   const [expandedWorkoutIndex, setExpandedWorkoutIndex] = useState<
     number | null
   >(null);
+  const [premadeWorkouts, setPremadeWorkouts] = useState<any[]>([]);
 
-  const premadeWorkouts = [
-    {
-      name: pushWorkout.name,
-      description: pushWorkout.description,
-      exercises: pushWorkout.exercises,
-    },
-    {
-      name: pullWorkout.name,
-      description: pullWorkout.description,
-      exercises: pullWorkout.exercises,
-    },
-    {
-      name: legsWorkout.name,
-      description: legsWorkout.description,
-      exercises: legsWorkout.exercises,
-    }
-    // {
-    //   name: testWorkout.name,
-    //   description: testWorkout.description,
-    //   excercises: testWorkout.excercises
-    // },
-    // {
-    //   name: testWorkout2.name,
-    //   description: testWorkout2.description,
-    //   excercises: testWorkout2.excercises
-    // }
-  ];
+  useEffect(() => {
+    // Fetch premade workouts from the services file
+    const loadPremadeWorkouts = async () => {
+      try {
+        const workouts = await fetchPremadeWorkouts();
+        setPremadeWorkouts(workouts);
+      } catch (error) {
+        console.error("Error loading premade workouts:", error);
+      }
+    };
+
+    loadPremadeWorkouts();
+  }, []);
 
   const handleWorkoutSelect = (workout: any) => {
     setSelectedWorkouts([...selectedWorkouts, workout]);
@@ -91,7 +64,6 @@ export default function EditPlan() {
             </Button>
           </View>
         )}
-        
         ListFooterComponent={() => (
           <Button mode="contained" onPress={() => setModalVisible(true)}>
             Add Workout
@@ -195,6 +167,6 @@ export default function EditPlan() {
           </View>
         </View>
       </Modal>
-      </>
+    </>
   );
 }
