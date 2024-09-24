@@ -2,7 +2,7 @@ import { Button, TextInput, View, StyleSheet, TouchableOpacity, Text } from "rea
 import { useSignUp } from "@clerk/clerk-expo";
 import Spinner from "react-native-loading-spinner-overlay";
 import { useState } from "react";
-import { Stack } from "expo-router";
+import { Stack, useRouter } from "expo-router";
 import { createUserCollection } from "@/services/userServices";
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
@@ -16,6 +16,7 @@ export default function Register(){
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const router = useRouter();
 
   // Create the user and send the verification email
   const onSignUpPress = async () => {
@@ -132,7 +133,14 @@ export default function Register(){
           >
             <Text style={styles.buttonText}>Sign up</Text>
           </TouchableOpacity>
-        </>
+
+          <View style={styles.signInContainer}>
+            <Text style={styles.signInText}>Already have an account? </Text>
+            <TouchableOpacity onPress={() => router.push('/login')}>
+              <Text style={styles.signInLink}>Sign In</Text>
+            </TouchableOpacity>
+          </View>
+        </> 
       )}
 
       {pendingVerification && (
@@ -151,6 +159,7 @@ export default function Register(){
           >
             <Text style={styles.buttonText}>Verify Email</Text>
         </TouchableOpacity>
+
         </>
       )}
     </View>
@@ -165,7 +174,6 @@ const styles = StyleSheet.create({
     paddingVertical: 24,
     paddingHorizontal: 10,
     justifyContent: "center",
-    //padding: 20,
   },
   inputContainer: {
     flexDirection: 'row',
@@ -215,6 +223,20 @@ const styles = StyleSheet.create({
     lineHeight: 26,
     fontWeight: '600',  
     color: '#fff', 
+  },
+  signInContainer: {
+    flexDirection: 'row', 
+    textAlign: 'center',
+    justifyContent: 'center',
+  },
+  signInText: {
+    fontSize: 16,   
+    color: '#000',
+  },
+  signInLink: {
+    fontSize: 16,
+    color: '#6c47ff', 
+    fontWeight: 'bold', 
   },
 });
 
