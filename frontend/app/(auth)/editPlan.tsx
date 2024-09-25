@@ -8,7 +8,7 @@ import {
 } from "@/services/workoutServices";
 import Workout from "@/components/Workout";
 import tw from "twrnc";
-import { useAuth, useUser } from "@clerk/clerk-expo"; // Assuming you're using Clerk for auth
+import { useUser } from "@clerk/clerk-expo"; // Assuming you're using Clerk for auth
 
 export default function EditPlan() {
   const { user } = useUser(); // Get the logged-in user's info
@@ -17,7 +17,7 @@ export default function EditPlan() {
   const [selectedWorkouts, setSelectedWorkouts] = useState<any[]>([]);
   const [expandedWorkoutIndex, setExpandedWorkoutIndex] = useState<
     number | null
-  >(null);
+  >(null); // For tracking the expanded workout index
   const [premadeWorkouts, setPremadeWorkouts] = useState<any[]>([]);
   const [userWorkouts, setUserWorkouts] = useState<any[]>([]); // Store user's existing workouts
 
@@ -78,13 +78,33 @@ export default function EditPlan() {
         keyExtractor={(item, index) => index.toString()}
         renderItem={({ item, index }) => (
           <View style={tw`mb-4`}>
+            {/* Touchable workout item */}
             <TouchableOpacity onPress={() => toggleExpand(index)}>
-              <Workout
-                name={item.name}
-                description={item.description}
-                exercises={expandedWorkoutIndex === index ? item.exercises : []}
-              />
+              <View style={tw`bg-gray-100 p-4 rounded-lg`}>
+                {/* Display workout name and description */}
+                <Text style={tw`text-lg font-semibold`}>{item.name}</Text>
+                <Text style={tw`text-gray-600`}>{item.description}</Text>
+              </View>
             </TouchableOpacity>
+
+            {/* Expanded workout details */}
+            {expandedWorkoutIndex === index && (
+              <View style={tw`mt-2 bg-gray-200 p-4 rounded-lg`}>
+                {item.exercises.map((exercise: any, exerciseIndex: number) => (
+                  <View key={exerciseIndex} style={tw`mb-2`}>
+                    <Text style={tw`font-semibold`}>
+                      {exercise.name} ({exercise.sets} sets x {exercise.reps}{" "}
+                      reps)
+                    </Text>
+                    <Text style={tw`text-gray-700`}>
+                      {exercise.description}
+                    </Text>
+                  </View>
+                ))}
+              </View>
+            )}
+
+            {/* Remove workout button */}
             <Button
               mode="outlined"
               onPress={() => handleRemoveWorkout(index)}
