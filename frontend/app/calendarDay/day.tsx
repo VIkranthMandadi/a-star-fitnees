@@ -3,7 +3,7 @@ import { View, Text } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import tw from "twrnc";
 
-export default function workoutPage(){
+export default function workoutPage() {
   const { day } = useLocalSearchParams(); // Extract the selected day from the route
 
   return (
@@ -12,4 +12,4 @@ export default function workoutPage(){
       {/* Add logic to fetch and display the workouts for this day */}
     </View>
   );
-};
+}

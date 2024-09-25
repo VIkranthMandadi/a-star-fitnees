@@ -83,6 +83,56 @@ def get_premade_workouts():
 
     return jsonify(workouts)
 
+@app.route('/update-plan', methods=['POST'])
+def update_plan():
+    data = request.json
+    user_email = data.get('email')
+    workout = data.get('workout')
+
+    if not user_email or not workout:
+        return jsonify({'error': 'Email and workout data are required'}), 400
+
+    # Create a collection for the user using their email
+    user_collection_name = f"user_{user_email.replace('@', '_').replace('.', '_')}"
+    user_collection = db[user_collection_name]
+
+    # Check if the user already has a plan document
+    plan = user_collection.find_one({"plan": "workouts"})
+
+    if plan:
+        # If the plan exists, update the workouts array by adding the new workout
+        user_collection.update_one(
+            {"plan": "workouts"},
+            {"$push": {"workouts": workout}}
+        )
+    else:
+        # If the plan doesn't exist, create a new document with the workout
+        user_collection.insert_one(
+            {"plan": "workouts", "workouts": [workout]}
+        )
+
+    return jsonify({'message': 'Workout added to plan successfully'})
+
+@app.route('/get-user-workouts', methods=['GET'])
+def get_user_workouts():
+    user_email = request.args.get('email')
+    print(f"Received email: {user_email}")  # Debug log
+
+    if not user_email:
+        return jsonify({'error': 'Email is required'}), 400
+
+    user_collection_name = f"user_{user_email.replace('@', '_').replace('.', '_')}"
+    user_collection = db[user_collection_name]
+
+    plan = user_collection.find_one({"plan": "workouts"}, {'_id': 0, 'workouts': 1})
+    print(f"Fetched plan: {plan}")  # Debug log
+
+    if not plan or 'workouts' not in plan:
+        return jsonify({'message': 'No workouts found for the user', 'workouts': []}), 404
+
+    return jsonify({'message': 'Workouts found', 'workouts': plan['workouts']})
+
+
 
 @app.route('/')
 def home():
