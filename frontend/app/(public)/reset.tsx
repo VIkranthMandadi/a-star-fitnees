@@ -1,4 +1,4 @@
-import { View, StyleSheet, TextInput, Button } from "react-native";
+import { View, StyleSheet, TextInput, Button, TouchableOpacity, Text } from "react-native";
 import React, { useState } from "react";
 import { Stack } from "expo-router";
 import { useSignIn } from "@clerk/clerk-expo";
@@ -47,19 +47,21 @@ export default function PwReset(){
 
       {!successfulCreation && (
         <>
-          <TextInput
+        <View style={styles.inputContainer}>
+        <TextInput
             autoCapitalize="none"
             placeholder="simon@galaxies.dev"
             value={emailAddress}
             onChangeText={setEmailAddress}
             style={styles.inputField}
           />
-
-          <Button
-            onPress={onRequestReset}
-            title="Send Reset Email"
-            color={"#6c47ff"}
-          ></Button>
+        </View>
+          <TouchableOpacity
+              onPress={onRequestReset}
+              style={styles.button} 
+            >
+              <Text style={styles.buttonText}>Send Reset Email</Text>
+          </TouchableOpacity>
         </>
       )}
 
@@ -99,15 +101,43 @@ const styles = StyleSheet.create({
   },
   inputField: {
     marginVertical: 4,
-    height: 50,
+    borderWidth: 0,
+    borderColor: "#6c47ff",
+    borderStyle: 'solid',
+    borderRadius: 12,
+    padding: 10,
+    backgroundColor: "#fff",
+    paddingHorizontal: 10, 
+    paddingVertical: 0,
+    flex: 1,
+  },
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center', 
+    position: 'relative',
     borderWidth: 1,
     borderColor: "#6c47ff",
-    borderRadius: 4,
-    padding: 10,
+    borderRadius: 12,
+    marginVertical: 4,
+    height: 50,
     backgroundColor: "#fff",
   },
   button: {
+    borderRadius: 30,
+    borderWidth: 1,
+    flexDirection: 'row',  
+    justifyContent: 'center', 
     margin: 8,
     alignItems: "center",
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    backgroundColor: '#6c47ff',
+    borderColor: '#6c47ff',
+  },
+  buttonText: {
+    fontSize: 18,
+    lineHeight: 26,
+    fontWeight: '600',  
+    color: '#fff', 
   },
 });
