@@ -36,7 +36,7 @@ const CalendarPage = () => {
   const handleDayPress = (day: number) => {
     const selectedDate = format(setDate(currentDate, day), "yyyy-MM-dd");
     router.push({
-      pathname: `/calendar/[day]`,
+      pathname: `/calendarDay/day`,
       params: { day: selectedDate },
     });
   };

@@ -1,11 +1,17 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, Modal, TouchableOpacity, FlatList } from "react-native";
 import { Button } from "react-native-paper";
-import { fetchPremadeWorkouts } from "@/services/workoutServices";
+import {
+  fetchPremadeWorkouts,
+  updatePlan,
+  fetchUserWorkouts,
+} from "@/services/workoutServices";
 import Workout from "@/components/Workout";
 import tw from "twrnc";
+import { useAuth, useUser } from "@clerk/clerk-expo"; // Assuming you're using Clerk for auth
 
 export default function EditPlan() {
+  const { user } = useUser(); // Get the logged-in user's info
   const [modalVisible, setModalVisible] = useState(false);
   const [premadeModalVisible, setPremadeModalVisible] = useState(false);
   const [selectedWorkouts, setSelectedWorkouts] = useState<any[]>([]);
@@ -13,9 +19,9 @@ export default function EditPlan() {
     number | null
   >(null);
   const [premadeWorkouts, setPremadeWorkouts] = useState<any[]>([]);
+  const [userWorkouts, setUserWorkouts] = useState<any[]>([]); // Store user's existing workouts
 
   useEffect(() => {
-    // Fetch premade workouts from the services file
     const loadPremadeWorkouts = async () => {
       try {
         const workouts = await fetchPremadeWorkouts();
@@ -25,12 +31,36 @@ export default function EditPlan() {
       }
     };
 
-    loadPremadeWorkouts();
-  }, []);
+    const loadUserWorkouts = async () => {
+      try {
+        if (user?.emailAddresses[0]?.emailAddress) {
+          const existingWorkouts = await fetchUserWorkouts(
+            user.emailAddresses[0].emailAddress
+          );
+          setUserWorkouts(existingWorkouts); // Populate the selected workouts with the user's saved ones
+        }
+      } catch (error) {
+        console.error("Error loading the user's existing workouts:", error);
+      }
+    };
 
-  const handleWorkoutSelect = (workout: any) => {
-    setSelectedWorkouts([...selectedWorkouts, workout]);
-    setPremadeModalVisible(false);
+    loadPremadeWorkouts();
+    loadUserWorkouts();
+  }, [user]);
+
+  const handleWorkoutSelect = async (workout: any) => {
+    try {
+      setSelectedWorkouts([...selectedWorkouts, workout]);
+
+      // Update the plan in MongoDB for the logged-in user
+      if (user && user?.emailAddresses[0].emailAddress) {
+        await updatePlan(user?.emailAddresses[0].emailAddress, workout);
+      }
+
+      setPremadeModalVisible(false);
+    } catch (error) {
+      console.error("Error adding workout to plan:", error);
+    }
   };
 
   const toggleExpand = (index: number) => {
@@ -44,7 +74,7 @@ export default function EditPlan() {
   return (
     <>
       <FlatList
-        data={selectedWorkouts}
+        data={userWorkouts} // Use user's existing workouts
         keyExtractor={(item, index) => index.toString()}
         renderItem={({ item, index }) => (
           <View style={tw`mb-4`}>
@@ -62,6 +92,13 @@ export default function EditPlan() {
             >
               Remove Workout
             </Button>
+          </View>
+        )}
+        ListEmptyComponent={() => (
+          <View style={tw`p-4`}>
+            <Text style={tw`text-center text-gray-600`}>
+              There are no workouts in your plan currently.
+            </Text>
           </View>
         )}
         ListFooterComponent={() => (
