@@ -102,7 +102,7 @@ export default function Register(){
               style={styles.inputField}
             />
           </View>
-          
+
           <View style={styles.inputContainer}>
             <TextInput
               placeholder="Password"
@@ -111,9 +111,16 @@ export default function Register(){
               secureTextEntry={!showPassword}
               style={styles.inputField}
             />
-            <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={styles.iconContainer}>
-                <Icon name={showPassword ? "visibility" : "visibility-off"} size={24} color="#6c47ff" />
-              </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => setShowPassword(!showPassword)}
+              style={styles.iconContainer}
+            >
+              <Icon
+                name={showPassword ? "visibility" : "visibility-off"}
+                size={24}
+                color="#6c47ff"
+              />
+            </TouchableOpacity>
           </View>
           <View style={styles.inputContainer}>
             <TextInput
@@ -123,29 +130,33 @@ export default function Register(){
               secureTextEntry={!showConfirmPassword}
               style={styles.inputField}
             />
-            <TouchableOpacity onPress={() => setShowConfirmPassword(!showConfirmPassword)} style={styles.iconContainer}>
-                <Icon name={showConfirmPassword ? "visibility" : "visibility-off"} size={24} color="#6c47ff" />
-              </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => setShowConfirmPassword(!showConfirmPassword)}
+              style={styles.iconContainer}
+            >
+              <Icon
+                name={showConfirmPassword ? "visibility" : "visibility-off"}
+                size={24}
+                color="#6c47ff"
+              />
+            </TouchableOpacity>
           </View>
-          <TouchableOpacity
-            onPress={onSignUpPress}
-            style={styles.button} 
-          >
+          <TouchableOpacity onPress={onSignUpPress} style={styles.button}>
             <Text style={styles.buttonText}>Sign up</Text>
           </TouchableOpacity>
 
           <View style={styles.signInContainer}>
             <Text style={styles.signInText}>Already have an account? </Text>
-            <TouchableOpacity onPress={() => router.push('/login')}>
+            <TouchableOpacity onPress={() => router.push("/login")}>
               <Text style={styles.signInLink}>Sign In</Text>
             </TouchableOpacity>
           </View>
-        </> 
+        </>
       )}
 
       {pendingVerification && (
         <>
-          <View>
+          <View style={styles.inputContainer}>
             <TextInput
               value={code}
               placeholder="Code..."
@@ -153,13 +164,9 @@ export default function Register(){
               onChangeText={setCode}
             />
           </View>
-          <TouchableOpacity
-            onPress={onPressVerify}
-            style={styles.button} 
-          >
+          <TouchableOpacity onPress={onPressVerify} style={styles.button}>
             <Text style={styles.buttonText}>Verify Email</Text>
-        </TouchableOpacity>
-
+          </TouchableOpacity>
         </>
       )}
     </View>

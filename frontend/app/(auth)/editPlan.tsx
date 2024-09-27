@@ -37,7 +37,8 @@ export default function EditPlan() {
           const existingWorkouts = await fetchUserWorkouts(
             user.emailAddresses[0].emailAddress
           );
-          setUserWorkouts(existingWorkouts); // Populate the selected workouts with the user's saved ones
+          console.log(JSON.stringify(existingWorkouts, null, 2));
+          setUserWorkouts(existingWorkouts.workouts); // Populate the selected workouts with the user's saved ones
         }
       } catch (error) {
         console.error("Error loading the user's existing workouts:", error);
