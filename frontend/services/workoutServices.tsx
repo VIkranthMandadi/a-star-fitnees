@@ -44,3 +44,32 @@ export const fetchUserWorkouts = async (email: string) => {
     throw error;
   }
 };
+
+// Fetch the scheduled workout for a specific day
+export const getScheduledWorkout = async (email: string, day: string) => {
+  try {
+    const response = await api.get("/workouts/scheduled", {
+      params: { email, day },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching scheduled workout:', error);
+    throw error;
+  }
+};
+
+// Schedule a workout for a specific day
+export const scheduleWorkout = async (email: string, day: string, workoutId: string) => {
+  try {
+
+    const response = await api.post("/workouts/schedule", {
+      email,
+      day,
+      workoutId
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error scheduling workout:', error);
+    throw error;
+  }
+};

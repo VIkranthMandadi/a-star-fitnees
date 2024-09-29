@@ -56,6 +56,12 @@ export default function EditPlan() {
       // Update the plan in MongoDB for the logged-in user
       if (user && user?.emailAddresses[0].emailAddress) {
         await updatePlan(user?.emailAddresses[0].emailAddress, workout);
+
+        // Re-fetch the updated workouts after adding the new one
+        const updatedWorkouts = await fetchUserWorkouts(
+          user.emailAddresses[0].emailAddress
+        );
+        setUserWorkouts(updatedWorkouts.workouts); // Update state to reflect new workout
       }
 
       setPremadeModalVisible(false);

@@ -128,9 +128,55 @@ def get_user_workouts():
     print(f"Fetched plan: {plan}")  # Debug log
 
     if not plan or 'workouts' not in plan:
-        return jsonify({'message': 'No workouts found for the user', 'workouts': []}), 404
+        return jsonify({'message': 'No workouts found for the user', 'workouts': []}), 200
 
     return jsonify({'message': 'Workouts found', 'workouts': plan['workouts']})
+
+# Fetch the scheduled workout for a specific day
+@app.route('/workouts/scheduled', methods=['GET'])
+def get_scheduled_workout():
+    user_email = request.args.get('email')
+    day = request.args.get('day')
+
+    if not user_email or not day:
+        return jsonify({'error': 'Email and day are required'}), 400
+
+    user_collection_name = f"user_{user_email.replace('@', '_').replace('.', '_')}"
+    user_collection = db[user_collection_name]
+
+    # Find the scheduled workout for the specified day
+    scheduled_workout = user_collection.find_one({'scheduled_day': day}, {'_id': 0, 'workout': 1})
+
+    if not scheduled_workout:
+        return jsonify({'message': 'No workout scheduled for this day', 'scheduledWorkout': None}), 200
+
+    return jsonify({'message': 'Scheduled workout found', 'scheduledWorkout': scheduled_workout['workout']})
+
+# Schedule a workout for a specific day
+@app.route('/workouts/schedule', methods=['POST'])
+def schedule_workout():
+    data = request.json
+    user_email = data.get('email')
+    day = data.get('day')
+    workout_id = data.get('workoutId')
+
+    if not user_email or not day or not workout_id:
+        return jsonify({'error': 'Email, day, and workout ID are required'}), 400
+
+    user_collection_name = f"user_{user_email.replace('@', '_').replace('.', '_')}"
+    user_collection = db[user_collection_name]
+
+    # Check if a workout is already scheduled for the day
+    existing_schedule = user_collection.find_one({'scheduled_day': day})
+
+    if existing_schedule:
+        # Update the workout for the existing day
+        user_collection.update_one({'scheduled_day': day}, {'$set': {'workout': workout_id}})
+    else:
+        # Insert a new document with the workout scheduled for the day
+        user_collection.insert_one({'scheduled_day': day, 'workout': workout_id})
+
+    return jsonify({'message': 'Workout scheduled successfully'})
 
 
 
