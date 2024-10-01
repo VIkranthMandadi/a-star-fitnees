@@ -59,13 +59,12 @@ export const getScheduledWorkout = async (email: string, day: string) => {
 };
 
 // Schedule a workout for a specific day
-export const scheduleWorkout = async (email: string, day: string, workoutId: string) => {
+export const scheduleWorkout = async (email: string, day: string, workout: any) => {
   try {
-
     const response = await api.post("/workouts/schedule", {
       email,
       day,
-      workoutId
+      workout,  // Send the full workout object
     });
     return response.data;
   } catch (error) {

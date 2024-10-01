@@ -158,10 +158,10 @@ def schedule_workout():
     data = request.json
     user_email = data.get('email')
     day = data.get('day')
-    workout_id = data.get('workoutId')
+    workout = data.get('workout')  # Get the full workout object
 
-    if not user_email or not day or not workout_id:
-        return jsonify({'error': 'Email, day, and workout ID are required'}), 400
+    if not user_email or not day or not workout:
+        return jsonify({'error': 'Email, day, and workout details are required'}), 400
 
     user_collection_name = f"user_{user_email.replace('@', '_').replace('.', '_')}"
     user_collection = db[user_collection_name]
@@ -171,12 +171,13 @@ def schedule_workout():
 
     if existing_schedule:
         # Update the workout for the existing day
-        user_collection.update_one({'scheduled_day': day}, {'$set': {'workout': workout_id}})
+        user_collection.update_one({'scheduled_day': day}, {'$set': {'workout': workout}})
     else:
         # Insert a new document with the workout scheduled for the day
-        user_collection.insert_one({'scheduled_day': day, 'workout': workout_id})
+        user_collection.insert_one({'scheduled_day': day, 'workout': workout})
 
     return jsonify({'message': 'Workout scheduled successfully'})
+
 
 
 
